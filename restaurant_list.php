@@ -117,7 +117,7 @@ $result = $conn->query("SELECT * FROM restaurants");
         <p class="sub-title">안녕하세요, <?php echo htmlspecialchars($username); ?>님!</p>
         <a href="dashboard.php" class="btn">대시보드</a>
         <a href="restaurant_form.php" class="btn">새 식당 등록</a>
-        <a href="index.php" class="btn">로그아웃</a>
+        <a href="logout.php" class="btn">로그아웃</a>
         
         <table>
             <thead>

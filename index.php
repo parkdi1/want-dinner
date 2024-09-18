@@ -30,10 +30,15 @@ if (isset($_SESSION['username'])) {
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             width: 300px;
         }
-        h2 {
+        h1, h2 {
             color: #202124;
-            font-size: 24px;
             margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 28px;
+        }
+        h2 {
+            font-size: 18px;
         }
         input[type="text"], input[type="password"] {
             width: 100%;
@@ -80,6 +85,21 @@ if (isset($_SESSION['username'])) {
             color: #5f6368;
             margin-top: 20px;
         }
+        #debug-info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        #debug-info pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -87,18 +107,14 @@ if (isset($_SESSION['username'])) {
         <h1>저녁 뭐먹지?</h1>
         <h2>테스트페이지 입니다 실제 ID/PW을 넣지 마세요</h2>
         <h2>로그인</h2>
-        <?php
-        if (isset($_GET['error'])) {
-            echo "<p class='error'>로그인 실패. 아이디와 비밀번호를 확인해주세요.</p>";
-        }
-        ?>
-        <form action="login_process.php" method="post">
+        <form id="login-form">
             <input type="text" name="username" placeholder="아이디" required>
             <input type="password" name="password" placeholder="비밀번호" required>
             <input type="submit" value="로그인">
         </form>
         <p>계정이 없으신가요? <a href="register.php">회원가입</a></p>
         <div id="current-time"></div>
+        <div id="debug-info"></div>
     </div>
 
     <script>
@@ -118,11 +134,31 @@ if (isset($_SESSION['username'])) {
             document.getElementById('current-time').textContent = formattedTime;
         }
 
-        // 페이지 로드 시 즉시 시간 표시
         updateTime();
-
-        // 1초마다 시간 업데이트
         setInterval(updateTime, 1000);
+
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+
+            fetch('login_process.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('debug-info').innerHTML = '<pre>' + data.debug + '</pre>';
+                if (data.success) {
+                    alert(data.message);
+                    window.location.href = 'dashboard.php';
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
     </script>
 </body>
 </html>
